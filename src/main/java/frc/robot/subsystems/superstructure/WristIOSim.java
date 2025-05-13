@@ -7,9 +7,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 import frc.robot.subsystems.MechanismConstants.WristConstants;
@@ -29,15 +27,6 @@ public class WristIOSim extends WristIOSparkMax {
           Math.toRadians(0),
           false, // it can hold its own weight so effectively no gravity
           0);
-  private FlywheelSim leftSim =
-      new FlywheelSim(
-          // idk what the MOI is
-          LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 1, 25), DCMotor.getNeo550(1));
-
-  private FlywheelSim rightSim =
-      new FlywheelSim(
-          // idk what the MOI is
-          LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 1, 25), DCMotor.getNeo550(1));
 
   public WristIOSim() {
     super();

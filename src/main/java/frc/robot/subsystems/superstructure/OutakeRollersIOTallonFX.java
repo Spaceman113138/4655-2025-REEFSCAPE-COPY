@@ -10,8 +10,8 @@ import com.ctre.phoenix6.signals.UpdateModeValue;
 import frc.robot.subsystems.MechanismConstants;
 
 public class OutakeRollersIOTallonFX implements OutakeRollersIO {
-  private final TalonFX rightMotor = new TalonFX(MechanismConstants.rightIntakeId);
-  private final TalonFX leftMotor = new TalonFX(MechanismConstants.leftIntakeId);
+  protected final TalonFX rightMotor = new TalonFX(MechanismConstants.rightIntakeId);
+  protected final TalonFX leftMotor = new TalonFX(MechanismConstants.leftIntakeId);
   private final CANrange manipulatorLaser = new CANrange(MechanismConstants.forwardCANrangeId);
   private final CANrange elevatorLaser = new CANrange(MechanismConstants.canRangeID);
 
