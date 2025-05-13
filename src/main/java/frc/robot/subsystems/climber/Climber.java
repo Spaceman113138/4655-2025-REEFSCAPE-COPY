@@ -36,11 +36,11 @@ public class Climber extends SubsystemBase {
   }
 
   public Command voltageCommand(Supplier<Double> voltage) {
-    return Commands.run(() -> requestClimberVoltage(voltage));
+    return Commands.run(() -> requestClimberVoltage(voltage)).withName("Run Voltage: " + voltage);
   }
 
   public Command prepareClimbPosition() {
-    return run(() -> requestPosition(climbPosition));
+    return run(() -> requestPosition(climbPosition)).withName("Climb Position");
   }
 
   private void requestPosition(double position) {

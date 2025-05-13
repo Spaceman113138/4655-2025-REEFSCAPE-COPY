@@ -15,12 +15,15 @@ package frc.robot;
 
 // import static frc.robot.subsystems.Vision.VisionConstants.*;
 
+import static edu.wpi.first.wpilibj2.command.Commands.startEnd;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -86,6 +89,7 @@ public class RobotContainer {
 
   private final Trigger delayCondition;
   private final Trigger autoScore;
+  private final Trigger intakedPiece;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -164,6 +168,13 @@ public class RobotContainer {
     delayCondition = new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
     autoScore = new Trigger(drive.readyAutoScore.or(controller.rightBumper()));
 
+    intakedPiece = superstructure.outake.hasAlgae.or(superstructure.outake.hasCoral);
+    intakedPiece.onTrue(
+        startEnd(
+                () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.5),
+                () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.0))
+            .withTimeout(1));
+
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     configureNamedCommands();
@@ -208,7 +219,9 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    controller.leftBumper().onTrue(superstructure.intakeCoral().alongWith(hopper.intakeCommand()));
+    controller
+        .leftBumper()
+        .onTrue(superstructure.intakeCoral().alongWith(hopper.intakeCommand()).withName("intake"));
 
     /*
      * For all score commands: they do not do anything until auto score OR pressing Aux-Y
@@ -235,7 +248,9 @@ public class RobotContainer {
                 .andThen(
                     superstructure
                         .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate()))));
+                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
+                .withName("Score L1"));
+
     auxController
         .rightTrigger()
         .and(auxController.b().negate())
@@ -245,7 +260,9 @@ public class RobotContainer {
                 .andThen(
                     superstructure
                         .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate()))));
+                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
+                .withName("Score L2"));
+
     auxController
         .leftBumper()
         .and(auxController.b().negate())
@@ -255,7 +272,9 @@ public class RobotContainer {
                 .andThen(
                     superstructure
                         .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate()))));
+                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
+                .withName("Score L3"));
+
     auxController
         .rightBumper()
         .and(auxController.b().negate())
@@ -265,17 +284,28 @@ public class RobotContainer {
                 .andThen(
                     superstructure
                         .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate()))));
+                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
+                .withName("Score L4"));
+
     auxController
         .leftTrigger()
         .and(auxController.b())
-        .whileTrue(superstructure.intakeAlgaeGround());
-    auxController.rightTrigger().and(auxController.b()).whileTrue(superstructure.intakeAlgaeL2());
-    auxController.leftBumper().and(auxController.b()).whileTrue(superstructure.intakeAlgaeL3());
+        .whileTrue(superstructure.intakeAlgaeGround().withName("algae ground"));
+
+    auxController
+        .rightTrigger()
+        .and(auxController.b())
+        .whileTrue(superstructure.intakeAlgaeL2().withName("algae L2"));
+
+    auxController
+        .leftBumper()
+        .and(auxController.b())
+        .whileTrue(superstructure.intakeAlgaeL3().withName("algae L3"));
+
     auxController
         .rightBumper()
         .and(auxController.b())
-        .whileTrue(superstructure.scoreBarge(() -> true, controller.b()));
+        .whileTrue(superstructure.scoreBarge(() -> true, controller.b()).withName("Score barge"));
   }
 
   private void configureLEDbindings() {}
@@ -283,7 +313,12 @@ public class RobotContainer {
   public void logSubsystems() {
     SmartDashboard.putData("drive", drive);
     SmartDashboard.putData("superstructure", superstructure);
-    SmartDashboard.putData("Lights", lights);
+    SmartDashboard.putData("outake", superstructure.outake);
+    SmartDashboard.putData("wrist", superstructure.wrist);
+    SmartDashboard.putData("elevator", superstructure.elevator);
+    SmartDashboard.putData("hopper", hopper);
+    SmartDashboard.putData("climber", climber);
+    SmartDashboard.putData("lights", lights);
   }
 
   public void updateMechanism2ds() {

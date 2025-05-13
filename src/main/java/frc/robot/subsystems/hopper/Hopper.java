@@ -70,18 +70,18 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command defaultCommand() {
-    return run(
-        () -> {
+    return run(() -> {
           requestBeltVoltage(1);
           requestPivotAngle(intakeAngle);
-        });
+        })
+        .withName("Slow intake");
   }
 
   public Command idleCommand() {
-    return idle(this);
+    return idle(this).withName("idle");
   }
 
   public Command climbComand() {
-    return run(() -> requestPivotAngle(climbAngle));
+    return run(() -> requestPivotAngle(climbAngle)).withName("Climb Angle");
   }
 }
