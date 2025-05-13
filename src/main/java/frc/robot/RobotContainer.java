@@ -161,7 +161,7 @@ public class RobotContainer {
 
     lights = new Lights();
 
-    delayCondition = new Trigger(drive.autoElevator.or(auxController.y()));
+    delayCondition = new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
     autoScore = new Trigger(drive.readyAutoScore.or(controller.rightBumper()));
 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

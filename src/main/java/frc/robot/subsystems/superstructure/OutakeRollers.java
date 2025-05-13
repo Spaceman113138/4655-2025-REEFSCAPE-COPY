@@ -20,6 +20,7 @@ public class OutakeRollers extends SubsystemBase {
   public Trigger elevatorDetects = new Trigger(() -> inputs.elevatorLaserDetects);
   public Trigger outakeStalled = new Trigger(this::motorsStalled);
   public Trigger hasAlgae = outakeStalled.debounce(.5, DebounceType.kBoth);
+  public Trigger hasCoral = manipulatorDetects.and(elevatorDetects.negate());
 
   /** Creates a new ExampleSubsystem. */
   public OutakeRollers(OutakeRollersIO io) {

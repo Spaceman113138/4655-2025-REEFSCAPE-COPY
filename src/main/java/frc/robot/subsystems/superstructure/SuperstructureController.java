@@ -9,9 +9,9 @@ import frc.robot.util.SubsystemGroup;
 import java.util.function.BooleanSupplier;
 
 public class SuperstructureController extends SubsystemGroup {
-  private Elevator elevator;
-  private Wrist wrist;
-  private OutakeRollers outake;
+  public Elevator elevator;
+  public Wrist wrist;
+  public OutakeRollers outake;
 
   public static enum ScorePositions {
     hold(0.05, -45, 6.0),
