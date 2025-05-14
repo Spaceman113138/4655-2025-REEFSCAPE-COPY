@@ -58,11 +58,11 @@ public class OutakeRollers extends SubsystemBase {
     }
 
     protected Command intake(PieceType type) {
-        if (type == PieceType.coral) {
-            return intakeCoral();
-        } else {
-            return intakeAlgae();
-        }
+        return either(
+                        intakeCoral().withName("Intake Coral"),
+                        intakeAlgae().withName("Intake Algae"),
+                        () -> type == PieceType.coral)
+                .withName("Intake: " + type.toString());
     }
 
     private Command holdCoral() {

@@ -73,7 +73,7 @@ public class SuperstructureController extends SubsystemGroup {
 
     private void configureDefaultCommands() {
         elevator.setDefaultCommand(elevator.moveToStore(outake.hasAlgae));
-        wrist.setDefaultCommand(wrist.moveToSetpoint(0.0));
+        wrist.setDefaultCommand(wrist.moveToSetpoint(0.0, "store flat"));
         outake.setDefaultCommand(outake.holdPiece());
     }
 
@@ -82,17 +82,18 @@ public class SuperstructureController extends SubsystemGroup {
     }
 
     private Command intake(IntakePositions postion) {
-        return sequence(
-                        wrist.moveToSetpoint(postion.wrist).asProxy(),
-                        elevator.moveToSetpoint(postion.elevator).asProxy(),
+        return parallel(
+                        wrist.moveToSetpoint(postion.wrist, postion.toString()).asProxy(),
+                        elevator.moveToSetpoint(postion.elevator, postion.toString())
+                                .asProxy(),
                         outake.intake(postion.type).asProxy())
                 .withName("intake " + postion.toString());
     }
 
     private Command prepareToScore(ScorePositions positions) {
-        return wrist.moveToSetpoint(positions.elevator)
-                .asProxy()
-                .alongWith(elevator.moveToSetpoint(positions.wrist).asProxy())
+        return (wrist.moveToSetpoint(positions.wrist, positions.toString()).asProxy())
+                .alongWith(elevator.moveToSetpoint(positions.elevator, positions.toString())
+                        .asProxy())
                 .withName("score " + positions.toString());
     }
 
