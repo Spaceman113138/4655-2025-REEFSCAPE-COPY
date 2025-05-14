@@ -12,8 +12,8 @@ import frc.robot.subsystems.MechanismConstants;
 public class OutakeRollersIOTallonFX implements OutakeRollersIO {
     protected final TalonFX rightMotor = new TalonFX(MechanismConstants.rightIntakeId);
     protected final TalonFX leftMotor = new TalonFX(MechanismConstants.leftIntakeId);
-    private final CANrange manipulatorLaser = new CANrange(MechanismConstants.forwardCANrangeId);
-    private final CANrange elevatorLaser = new CANrange(MechanismConstants.canRangeID);
+    protected final CANrange manipulatorLaser = new CANrange(MechanismConstants.forwardCANrangeId);
+    protected final CANrange elevatorLaser = new CANrange(MechanismConstants.canRangeID);
 
     public OutakeRollersIOTallonFX() {
         rightMotor.getConfigurator().apply(createConfig(InvertedValue.Clockwise_Positive));

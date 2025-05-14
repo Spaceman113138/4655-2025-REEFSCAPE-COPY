@@ -54,6 +54,7 @@ import frc.robot.subsystems.superstructure.ElevatorIO;
 import frc.robot.subsystems.superstructure.ElevatorIOSim;
 import frc.robot.subsystems.superstructure.ElevatorIOSparkMax;
 import frc.robot.subsystems.superstructure.OutakeRollersIO;
+import frc.robot.subsystems.superstructure.OutakeRollersIOSim;
 import frc.robot.subsystems.superstructure.OutakeRollersIOTallonFX;
 import frc.robot.subsystems.superstructure.SuperstructureController;
 import frc.robot.subsystems.superstructure.WristIO;
@@ -128,8 +129,8 @@ public class RobotContainer {
                         new ModuleIOSim(TunerConstants.BackLeft),
                         new ModuleIOSim(TunerConstants.BackRight));
                 vision = new Vision(drive::addVisionMeasurement, drive::getPose, new VisionIO() {});
-                superstructure =
-                        new SuperstructureController(new ElevatorIOSim(), new WristIOSim(), new OutakeRollersIO() {});
+                superstructure = new SuperstructureController(
+                        new ElevatorIOSim(), new WristIOSim(), new OutakeRollersIOSim() {});
                 climber = new Climber(new ClimberIO() {});
                 hopper = new Hopper(new HopperIOSparkMax());
                 break;

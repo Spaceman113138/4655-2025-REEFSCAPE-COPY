@@ -68,6 +68,6 @@ public class Wrist extends SubsystemBase {
     }
 
     protected Command moveToSetpoint(double position, String name) {
-        return run(() -> requestWristPosition(position)).until(atSetpoint).withName("Move to pos: " + name);
+        return run(() -> requestWristPosition(position)).withName("Move to pos: " + name);
     }
 }
