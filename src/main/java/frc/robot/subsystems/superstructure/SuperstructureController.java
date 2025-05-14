@@ -14,13 +14,13 @@ public class SuperstructureController extends SubsystemGroup {
   public OutakeRollers outake;
 
   public static enum ScorePositions {
-    hold(0.05, -45, 6.0),
+    hold(0.25, -45, 6.0),
     level1(0.05, -45, 6.0),
-    level2(0.05, -45, 6.0),
-    level3(0.05, -45, 6.0),
-    level4(0.05, -45, 6.0),
-    barge(0.05, -45, 6.0),
-    processor(0.05, -45, 6.0);
+    level2(0.235, 30.0, 6.0),
+    level3(0.370, 30.0, 6.0),
+    level4(0.58, 35.0, 6.0),
+    barge(0.588, -35, 12.0),
+    processor(0.05, 0.0, 6.0);
 
     public final double elevator;
     public final double wrist;
@@ -34,10 +34,10 @@ public class SuperstructureController extends SubsystemGroup {
   }
 
   public static enum IntakePositions {
-    hopperCoral(1, 1, coral),
-    algaeGround(1, 1, algae),
-    algaeL2(1, 1, algae),
-    algaeL3(1, 1, algae);
+    hopperCoral(0, -2.0, coral),
+    algaeGround(0, 20.0, algae),
+    algaeL2(0.185, 0, algae),
+    algaeL3(.312, 0, algae);
 
     public final double elevator;
     public final double wrist;
@@ -52,7 +52,7 @@ public class SuperstructureController extends SubsystemGroup {
 
   public static enum StorePositions {
     storeCoral(0, 0),
-    storeAlgae(.5, 0);
+    storeAlgae(.05, 0);
 
     public final double elevator;
     public final double wrist;
@@ -78,18 +78,23 @@ public class SuperstructureController extends SubsystemGroup {
   }
 
   private Command score(ScorePositions position) {
-    return outake.score(position.outake);
+    return outake.score(position.outake).withName("score").asProxy();
   }
 
   private Command intake(IntakePositions postion) {
-    return sequence(wrist.moveToSetpoint(postion.wrist), elevator.moveToSetpoint(postion.elevator))
-        .andThen(outake.intake(postion.type));
+    return sequence(
+            wrist.moveToSetpoint(postion.wrist).asProxy(),
+            elevator.moveToSetpoint(postion.elevator).asProxy(),
+            outake.intake(postion.type).asProxy())
+        .withName("intake " + postion.toString());
   }
 
   private Command prepareToScore(ScorePositions positions) {
     return wrist
         .moveToSetpoint(positions.elevator)
-        .alongWith(elevator.moveToSetpoint(positions.wrist));
+        .asProxy()
+        .alongWith(elevator.moveToSetpoint(positions.wrist).asProxy())
+        .withName("score " + positions.toString());
   }
 
   public Command scoreL4(BooleanSupplier delayCondition, BooleanSupplier canScore) {
@@ -103,8 +108,8 @@ public class SuperstructureController extends SubsystemGroup {
                                     canScore.getAsBoolean()
                                         && elevator.atSetpoint.getAsBoolean()
                                         && wrist.atSetpoint.getAsBoolean())
-                            .andThen(score(ScorePositions.level4)))
-                    .withName("Level 4")));
+                            .andThen(score(ScorePositions.level4))))
+            .withName("Level 4"));
   }
 
   public Command scoreL3(BooleanSupplier delayCondition, BooleanSupplier canScore) {
@@ -118,8 +123,8 @@ public class SuperstructureController extends SubsystemGroup {
                                     canScore.getAsBoolean()
                                         && elevator.atSetpoint.getAsBoolean()
                                         && wrist.atSetpoint.getAsBoolean())
-                            .andThen(score(ScorePositions.level3)))
-                    .withName("Level 3")));
+                            .andThen(score(ScorePositions.level3))))
+            .withName("Level 3"));
   }
 
   public Command scoreL2(BooleanSupplier delayCondition, BooleanSupplier canScore) {
@@ -157,7 +162,8 @@ public class SuperstructureController extends SubsystemGroup {
   }
 
   public Command idle() {
-    return parallel(elevator.idleCommand(), wrist.idleCommand(), outake.idleCommand());
+    return parallel(elevator.idleCommand(), wrist.idleCommand(), outake.idleCommand())
+        .withName("subsystem idle");
   }
 
   public Command scoreBarge(BooleanSupplier delayCondition, BooleanSupplier canScore) {

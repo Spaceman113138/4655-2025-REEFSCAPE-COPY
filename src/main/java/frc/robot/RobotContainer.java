@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -165,7 +165,10 @@ public class RobotContainer {
 
     lights = new Lights();
 
-    delayCondition = new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
+    DriverStation.silenceJoystickConnectionWarning(true);
+
+    delayCondition =
+        new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
     autoScore = new Trigger(drive.readyAutoScore.or(controller.rightBumper()));
 
     intakedPiece = superstructure.outake.hasAlgae.or(superstructure.outake.hasCoral);
@@ -184,7 +187,9 @@ public class RobotContainer {
     configureLEDbindings();
 
     RobotModeTriggers.teleop()
-        .onTrue(Commands.parallel(superstructure.idle(), hopper.idleCommand()).withName("Idle On Enable"));
+        .onTrue(
+            Commands.parallel(superstructure.idle(), hopper.idleCommand())
+                .withName("Idle On Enable"));
   }
 
   /**

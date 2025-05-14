@@ -165,14 +165,15 @@ public class Elevator extends SubsystemBase {
   }
 
   protected Command moveToSetpoint(double position) {
-    return requestElevatorPosition(position);
+    return requestElevatorPosition(position).withName("Move to pos: " + position);
   }
 
   protected Command moveToStore(BooleanSupplier hasAlgae) {
     return either(
-        moveToSetpoint(StorePositions.storeAlgae.elevator),
-        moveToSetpoint(StorePositions.storeCoral.elevator),
-        hasAlgae);
+            moveToSetpoint(StorePositions.storeAlgae.elevator),
+            moveToSetpoint(StorePositions.storeCoral.elevator),
+            hasAlgae)
+        .withName("Move to Store");
   }
 
   protected Command idleCommand() {

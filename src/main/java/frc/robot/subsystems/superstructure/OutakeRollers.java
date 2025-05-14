@@ -54,7 +54,7 @@ public class OutakeRollers extends SubsystemBase {
   protected Command score(double speed) {
     return run(() -> requestVoltageControl(speed))
         .until(manipulatorDetects.negate().and(outakeStalled.negate()))
-        .withName("score");
+        .withName("Score " + speed);
   }
 
   protected Command intake(PieceType type) {
@@ -66,19 +66,19 @@ public class OutakeRollers extends SubsystemBase {
   }
 
   private Command holdCoral() {
-    return run(() -> requestVoltageControl(0));
+    return run(() -> requestVoltageControl(0)).withName("Hold Coral");
   }
 
   private Command holdAlgae() {
-    return run(() -> requestVoltageControl(-1));
+    return run(() -> requestVoltageControl(-1)).withName("Hold Algae");
   }
 
   protected Command holdPiece() {
-    return either(holdAlgae(), intakeCoral().andThen(holdCoral()), hasAlgae);
+    return either(holdAlgae(), intakeCoral().andThen(holdCoral()), hasAlgae).withName("Hold Piece");
   }
 
   private Command intakeAlgae() {
-    return run(() -> requestVoltageControl(12.0)).until(hasAlgae).withName("inake algea");
+    return run(() -> requestVoltageControl(12.0)).until(hasAlgae).withName("Intake algea");
   }
 
   protected Command idleCommand() {
