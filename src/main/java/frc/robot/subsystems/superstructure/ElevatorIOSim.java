@@ -21,58 +21,56 @@ import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
 public class ElevatorIOSim extends ElevatorIOSparkMax {
-  ElevatorSim elevatorSim =
-      new ElevatorSim(
-          DCMotor.getNEO(2),
-          ElevatorConstants.elevatorGearing,
-          27.2155,
-          ElevatorConstants.elevatorDrumRad,
-          0.0,
-          Units.inchesToMeters(24.0),
-          true,
-          0.0);
+    ElevatorSim elevatorSim = new ElevatorSim(
+            DCMotor.getNEO(2),
+            ElevatorConstants.elevatorGearing,
+            27.2155,
+            ElevatorConstants.elevatorDrumRad,
+            0.0,
+            Units.inchesToMeters(24.0),
+            true,
+            0.0);
 
-  private SparkMaxSim motorSim = new SparkMaxSim(m_leftElevator, DCMotor.getNEO(2));
+    private SparkMaxSim motorSim = new SparkMaxSim(m_leftElevator, DCMotor.getNEO(2));
 
-  private SparkRelativeEncoderSim simEncoder = motorSim.getRelativeEncoderSim();
+    private SparkRelativeEncoderSim simEncoder = motorSim.getRelativeEncoderSim();
 
-  private SparkLimitSwitchSim bottomLimitSwitchSim = motorSim.getReverseLimitSwitchSim();
-  private SparkMaxConfig simConfig = new SparkMaxConfig();
+    private SparkLimitSwitchSim bottomLimitSwitchSim = motorSim.getReverseLimitSwitchSim();
+    private SparkMaxConfig simConfig = new SparkMaxConfig();
 
-  public ElevatorIOSim() {
-    super();
+    public ElevatorIOSim() {
+        super();
 
-    bottomLimitSwitchSim.setPressed(true);
+        bottomLimitSwitchSim.setPressed(true);
 
-    // Adjust left motor closed loop (pid controller) config
-    ClosedLoopConfig closedLoopConfig = simConfig.closedLoop;
-    closedLoopConfig
-        .pid(ElevatorConstants.simKp, ElevatorConstants.simKi, ElevatorConstants.simKd)
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .positionWrappingEnabled(false);
+        // Adjust left motor closed loop (pid controller) config
+        ClosedLoopConfig closedLoopConfig = simConfig.closedLoop;
+        closedLoopConfig
+                .pid(ElevatorConstants.simKp, ElevatorConstants.simKi, ElevatorConstants.simKd)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .positionWrappingEnabled(false);
 
-    // Configure both motors
-    m_leftElevator.configure(
-        simConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        // Configure both motors
+        m_leftElevator.configure(simConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    if (Constants.usePIDtuning) {
-      super.setUpPIDTuning();
+        if (Constants.usePIDtuning) {
+            super.setUpPIDTuning();
+        }
     }
-  }
 
-  @Override
-  public void updateInputs(ElevatorIOInputs inputs) {
-    elevatorSim.setInputVoltage(m_leftElevator.getBusVoltage() * m_leftElevator.getAppliedOutput());
-    elevatorSim.update(.02);
+    @Override
+    public void updateInputs(ElevatorIOInputs inputs) {
+        elevatorSim.setInputVoltage(m_leftElevator.getBusVoltage() * m_leftElevator.getAppliedOutput());
+        elevatorSim.update(.02);
 
-    motorSim.iterate(elevatorSim.getVelocityMetersPerSecond(), 12, 0.02);
-    // motorSim.setPosition(elevatorSim.getPositionMeters());
+        motorSim.iterate(elevatorSim.getVelocityMetersPerSecond(), 12, 0.02);
+        // motorSim.setPosition(elevatorSim.getPositionMeters());
 
-    Logger.recordOutput("Elevator/simHeight", elevatorSim.getPositionMeters());
-    Logger.recordOutput("Elevator/simVelo", elevatorSim.getVelocityMetersPerSecond());
+        Logger.recordOutput("Elevator/simHeight", elevatorSim.getPositionMeters());
+        Logger.recordOutput("Elevator/simVelo", elevatorSim.getVelocityMetersPerSecond());
 
-    bottomLimitSwitchSim.setPressed(elevatorSim.wouldHitLowerLimit(inputs.elevatorPos));
+        bottomLimitSwitchSim.setPressed(elevatorSim.wouldHitLowerLimit(inputs.elevatorPos));
 
-    super.updateInputs(inputs);
-  }
+        super.updateInputs(inputs);
+    }
 }

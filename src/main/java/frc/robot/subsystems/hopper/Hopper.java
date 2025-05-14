@@ -9,79 +9,76 @@ import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
 
-  private final HopperIO io;
+    private final HopperIO io;
 
-  private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
+    private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
 
-  private static final double pivotAllowedError = 1.0;
-  private static final double intakeAngle = 0.0;
-  private static final double climbAngle = 100.0;
+    private static final double pivotAllowedError = 1.0;
+    private static final double intakeAngle = 0.0;
+    private static final double climbAngle = 100.0;
 
-  private static final double intakeBeltVoltage = 6.0;
+    private static final double intakeBeltVoltage = 6.0;
 
-  public Trigger pivotAtSetpoint = new Trigger(this::isPivotAtSetpoint);
+    public Trigger pivotAtSetpoint = new Trigger(this::isPivotAtSetpoint);
 
-  /** Creates a new ExampleSubsystem. */
-  public Hopper(HopperIO io) {
-    this.io = io;
+    /** Creates a new ExampleSubsystem. */
+    public Hopper(HopperIO io) {
+        this.io = io;
 
-    setDefaultCommand(defaultCommand());
-  }
+        setDefaultCommand(defaultCommand());
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    io.updateInputs(inputs);
-    Logger.processInputs("Hopper", inputs);
-  }
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        io.updateInputs(inputs);
+        Logger.processInputs("Hopper", inputs);
+    }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+    @Override
+    public void simulationPeriodic() {
+        // This method will be called once per scheduler run during simulation
+    }
 
-  private boolean isPivotAtSetpoint() {
-    return Math.abs(inputs.pivotSetpoint - inputs.pivotAngle) > pivotAllowedError;
-  }
+    private boolean isPivotAtSetpoint() {
+        return Math.abs(inputs.pivotSetpoint - inputs.pivotAngle) > pivotAllowedError;
+    }
 
-  // Call to drive pivot to a setpoint
-  private void requestPivotAngle(double angle) {
-    inputs.pivotSetpoint = angle;
-    io.requestPivotAngle(angle);
-  }
+    // Call to drive pivot to a setpoint
+    private void requestPivotAngle(double angle) {
+        inputs.pivotSetpoint = angle;
+        io.requestPivotAngle(angle);
+    }
 
-  // Call to drive belt at requested voltage
-  private void requestBeltVoltage(double voltage) {
-    io.requestBeltVoltage(voltage);
-  }
+    // Call to drive belt at requested voltage
+    private void requestBeltVoltage(double voltage) {
+        io.requestBeltVoltage(voltage);
+    }
 
-  private void stopBelt() {
-    io.stopBelt();
-  }
+    private void stopBelt() {
+        io.stopBelt();
+    }
 
-  public Command intakeCommand() {
-    return (run(() -> requestPivotAngle(intakeAngle))
-            .until(pivotAtSetpoint)
-            .withName("Pivot To Intake"))
-        .andThen(
-            runEnd(() -> requestBeltVoltage(intakeBeltVoltage), this::stopBelt)
-                .withName("Run Belt Intake"))
-        .withName("Inake Sequence");
-  }
+    public Command intakeCommand() {
+        return (run(() -> requestPivotAngle(intakeAngle)).until(pivotAtSetpoint).withName("Pivot To Intake"))
+                .andThen(runEnd(() -> requestBeltVoltage(intakeBeltVoltage), this::stopBelt)
+                        .withName("Run Belt Intake"))
+                .withName("Inake Sequence");
+    }
 
-  public Command defaultCommand() {
-    return run(() -> {
-          requestBeltVoltage(1);
-          requestPivotAngle(intakeAngle);
-        })
-        .withName("Slow intake");
-  }
+    public Command defaultCommand() {
+        return run(() -> {
+                    requestBeltVoltage(1);
+                    requestPivotAngle(intakeAngle);
+                })
+                .withName("Slow intake");
+    }
 
-  public Command idleCommand() {
-    return idle(this).withName("idle");
-  }
+    public Command idleCommand() {
+        return idle(this).withName("idle");
+    }
 
-  public Command climbComand() {
-    return run(() -> requestPivotAngle(climbAngle)).withName("Climb Angle");
-  }
+    public Command climbComand() {
+        return run(() -> requestPivotAngle(climbAngle)).withName("Climb Angle");
+    }
 }

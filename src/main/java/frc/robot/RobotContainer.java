@@ -74,337 +74,303 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
-  // Subsystems
-  private final Drive drive;
-  private final Hopper hopper;
-  private final SuperstructureController superstructure;
-  private final Climber climber;
-  private final Lights lights;
+    // Subsystems
+    private final Drive drive;
+    private final Hopper hopper;
+    private final SuperstructureController superstructure;
+    private final Climber climber;
+    private final Lights lights;
 
-  private final Vision vision;
+    private final Vision vision;
 
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandXboxController auxController = new CommandXboxController(1);
+    // Controller
+    private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController auxController = new CommandXboxController(1);
 
-  private final Trigger delayCondition;
-  private final Trigger autoScore;
-  private final Trigger intakedPiece;
+    private final Trigger delayCondition;
+    private final Trigger autoScore;
+    private final Trigger intakedPiece;
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
 
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                drive::getPose,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera2Name, VisionConstants.robotToCamera2),
-                new VisionIOPhotonVision(
-                    VisionConstants.camera3Name, VisionConstants.robotToCamera3));
-        superstructure =
-            new SuperstructureController(
-                new ElevatorIOSparkMax(), new WristIOSparkMax(), new OutakeRollersIOTallonFX());
-        climber = new Climber(new ClimberIOSparkMax());
-        hopper = new Hopper(new HopperIOSparkMax());
-        break;
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                drive = new Drive(
+                        new GyroIOPigeon2(),
+                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFX(TunerConstants.FrontRight),
+                        new ModuleIOTalonFX(TunerConstants.BackLeft),
+                        new ModuleIOTalonFX(TunerConstants.BackRight));
+                vision = new Vision(
+                        drive::addVisionMeasurement,
+                        drive::getPose,
+                        new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                        new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                        new VisionIOPhotonVision(VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                        new VisionIOPhotonVision(VisionConstants.camera3Name, VisionConstants.robotToCamera3));
+                superstructure = new SuperstructureController(
+                        new ElevatorIOSparkMax(), new WristIOSparkMax(), new OutakeRollersIOTallonFX());
+                climber = new Climber(new ClimberIOSparkMax());
+                hopper = new Hopper(new HopperIOSparkMax());
+                break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-        vision = new Vision(drive::addVisionMeasurement, drive::getPose, new VisionIO() {});
-        superstructure =
-            new SuperstructureController(
-                new ElevatorIOSim(), new WristIOSim(), new OutakeRollersIO() {});
-        climber = new Climber(new ClimberIO() {});
-        hopper = new Hopper(new HopperIOSparkMax());
-        break;
+            case SIM:
+                // Sim robot, instantiate physics sim IO implementations
+                drive = new Drive(
+                        new GyroIO() {},
+                        new ModuleIOSim(TunerConstants.FrontLeft),
+                        new ModuleIOSim(TunerConstants.FrontRight),
+                        new ModuleIOSim(TunerConstants.BackLeft),
+                        new ModuleIOSim(TunerConstants.BackRight));
+                vision = new Vision(drive::addVisionMeasurement, drive::getPose, new VisionIO() {});
+                superstructure =
+                        new SuperstructureController(new ElevatorIOSim(), new WristIOSim(), new OutakeRollersIO() {});
+                climber = new Climber(new ClimberIO() {});
+                hopper = new Hopper(new HopperIOSparkMax());
+                break;
 
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vision =
-            new Vision(
-                drive::addVisionMeasurement, drive::getPose, new VisionIO() {}, new VisionIO() {});
-        superstructure =
-            new SuperstructureController(
-                new ElevatorIO() {}, new WristIO() {}, new OutakeRollersIO() {});
-        climber = new Climber(new ClimberIO() {});
-        hopper = new Hopper(new HopperIO() {});
-        break;
+            default:
+                // Replayed robot, disable IO implementations
+                drive = new Drive(
+                        new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
+                vision = new Vision(drive::addVisionMeasurement, drive::getPose, new VisionIO() {}, new VisionIO() {});
+                superstructure =
+                        new SuperstructureController(new ElevatorIO() {}, new WristIO() {}, new OutakeRollersIO() {});
+                climber = new Climber(new ClimberIO() {});
+                hopper = new Hopper(new HopperIO() {});
+                break;
+        }
+
+        lights = new Lights();
+
+        DriverStation.silenceJoystickConnectionWarning(true);
+
+        delayCondition = new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
+        autoScore = new Trigger(drive.readyAutoScore.or(controller.rightBumper()));
+
+        intakedPiece = superstructure.outake.hasAlgae.or(superstructure.outake.hasCoral);
+        intakedPiece.onTrue(startEnd(
+                        () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.5),
+                        () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.0))
+                .withTimeout(1));
+
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+        configureNamedCommands();
+        configureTunerPaths();
+        // Configure the button bindings
+        configureButtonBindings();
+        configureLEDbindings();
+
+        RobotModeTriggers.teleop()
+                .onTrue(Commands.parallel(superstructure.idle(), hopper.idleCommand())
+                        .withName("Idle On Enable"));
     }
 
-    lights = new Lights();
-
-    DriverStation.silenceJoystickConnectionWarning(true);
-
-    delayCondition =
-        new Trigger(drive.autoElevator.or(auxController.y())).and(superstructure.outake.hasCoral);
-    autoScore = new Trigger(drive.readyAutoScore.or(controller.rightBumper()));
-
-    intakedPiece = superstructure.outake.hasAlgae.or(superstructure.outake.hasCoral);
-    intakedPiece.onTrue(
-        startEnd(
-                () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.5),
-                () -> auxController.getHID().setRumble(RumbleType.kBothRumble, 0.0))
-            .withTimeout(1));
-
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    configureNamedCommands();
-    configureTunerPaths();
-    // Configure the button bindings
-    configureButtonBindings();
-    configureLEDbindings();
-
-    RobotModeTriggers.teleop()
-        .onTrue(
-            Commands.parallel(superstructure.idle(), hopper.idleCommand())
-                .withName("Idle On Enable"));
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-
-    lights.setDefaultCommand(
-        (new SingleColorFade(new Color(80, 7, 120), lights)
-                .andThen(new SingleColorFade(new Color(255, 209, 0), lights)))
-            .repeatedly());
-
-    // reset heading to when X button is pressed
-    controller
-        .x()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
-
-    controller
-        .leftBumper()
-        .onTrue(superstructure.intakeCoral().alongWith(hopper.intakeCommand()).withName("intake"));
-
-    /*
-     * For all score commands: they do not do anything until auto score OR pressing Aux-Y
-     * For all score commands: score is done automaticaly when auto score OR Driver-Rb
-     * For all score commands: drives back and drops elevator automaticaly or waits until Aux-Y is released
-     *
-     * Aux-Lt without Aux-B: Move to L1
-     * Aux-Rt without Aux-B: Move to L2
-     * Aux-Lb without Aux-B: Move to L3
-     * Aux-Lr without Aux-B: Move to L4
-     *
-     * Aux-Lt with Aux-B: Move to ground intake
-     * Aux-Rt with Aux-B: Move to algae L2
-     * Aux-Lb with Aux-B: Move to algae L3
-     * Aux-Rb with Aux-B: Move to barge
-     *
+    /**
+     * Use this method to define your button->command mappings. Buttons can be created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    auxController
-        .leftTrigger()
-        .and(auxController.b().negate())
-        .whileTrue(
-            superstructure
-                .scoreL1(() -> true, controller.rightBumper())
-                .andThen(
-                    superstructure
-                        .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
-                .withName("Score L1"));
+    private void configureButtonBindings() {
 
-    auxController
-        .rightTrigger()
-        .and(auxController.b().negate())
-        .whileTrue(
-            superstructure
-                .scoreL2(delayCondition, autoScore)
-                .andThen(
-                    superstructure
-                        .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
-                .withName("Score L2"));
+        // Default command, normal field-relative drive
+        drive.setDefaultCommand(DriveCommands.joystickDrive(
+                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
-    auxController
-        .leftBumper()
-        .and(auxController.b().negate())
-        .whileTrue(
-            superstructure
-                .scoreL3(delayCondition, autoScore)
-                .andThen(
-                    superstructure
-                        .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
-                .withName("Score L3"));
+        lights.setDefaultCommand((new SingleColorFade(new Color(80, 7, 120), lights)
+                        .andThen(new SingleColorFade(new Color(255, 209, 0), lights)))
+                .repeatedly());
 
-    auxController
-        .rightBumper()
-        .and(auxController.b().negate())
-        .whileTrue(
-            superstructure
-                .scoreL4(delayCondition, autoScore)
-                .andThen(
-                    superstructure
-                        .holdHigh()
-                        .until(drive.safeElevatorDown.and(auxController.y().negate())))
-                .withName("Score L4"));
+        // reset heading to when X button is pressed
+        controller
+                .x()
+                .onTrue(Commands.runOnce(
+                                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                                drive)
+                        .ignoringDisable(true));
 
-    auxController
-        .leftTrigger()
-        .and(auxController.b())
-        .whileTrue(superstructure.intakeAlgaeGround().withName("algae ground"));
+        controller
+                .leftBumper()
+                .onTrue(superstructure
+                        .intakeCoral()
+                        .alongWith(hopper.intakeCommand())
+                        .withName("intake"));
 
-    auxController
-        .rightTrigger()
-        .and(auxController.b())
-        .whileTrue(superstructure.intakeAlgaeL2().withName("algae L2"));
+        /*
+         * For all score commands: they do not do anything until auto score OR pressing Aux-Y
+         * For all score commands: score is done automaticaly when auto score OR Driver-Rb
+         * For all score commands: drives back and drops elevator automaticaly or waits until Aux-Y is released
+         *
+         * Aux-Lt without Aux-B: Move to L1
+         * Aux-Rt without Aux-B: Move to L2
+         * Aux-Lb without Aux-B: Move to L3
+         * Aux-Lr without Aux-B: Move to L4
+         *
+         * Aux-Lt with Aux-B: Move to ground intake
+         * Aux-Rt with Aux-B: Move to algae L2
+         * Aux-Lb with Aux-B: Move to algae L3
+         * Aux-Rb with Aux-B: Move to barge
+         *
+         */
+        auxController
+                .leftTrigger()
+                .and(auxController.b().negate())
+                .whileTrue(superstructure
+                        .scoreL1(() -> true, controller.rightBumper())
+                        .andThen(superstructure
+                                .holdHigh()
+                                .until(drive.safeElevatorDown.and(
+                                        auxController.y().negate())))
+                        .withName("Score L1"));
 
-    auxController
-        .leftBumper()
-        .and(auxController.b())
-        .whileTrue(superstructure.intakeAlgaeL3().withName("algae L3"));
+        auxController
+                .rightTrigger()
+                .and(auxController.b().negate())
+                .whileTrue(superstructure
+                        .scoreL2(delayCondition, autoScore)
+                        .andThen(superstructure
+                                .holdHigh()
+                                .until(drive.safeElevatorDown.and(
+                                        auxController.y().negate())))
+                        .withName("Score L2"));
 
-    auxController
-        .rightBumper()
-        .and(auxController.b())
-        .whileTrue(superstructure.scoreBarge(() -> true, controller.b()).withName("Score barge"));
-  }
+        auxController
+                .leftBumper()
+                .and(auxController.b().negate())
+                .whileTrue(superstructure
+                        .scoreL3(delayCondition, autoScore)
+                        .andThen(superstructure
+                                .holdHigh()
+                                .until(drive.safeElevatorDown.and(
+                                        auxController.y().negate())))
+                        .withName("Score L3"));
 
-  private void configureLEDbindings() {}
+        auxController
+                .rightBumper()
+                .and(auxController.b().negate())
+                .whileTrue(superstructure
+                        .scoreL4(delayCondition, autoScore)
+                        .andThen(superstructure
+                                .holdHigh()
+                                .until(drive.safeElevatorDown.and(
+                                        auxController.y().negate())))
+                        .withName("Score L4"));
 
-  public void logSubsystems() {
-    SmartDashboard.putData("drive", drive);
-    SmartDashboard.putData("superstructure", superstructure);
-    SmartDashboard.putData("outake", superstructure.outake);
-    SmartDashboard.putData("wrist", superstructure.wrist);
-    SmartDashboard.putData("elevator", superstructure.elevator);
-    SmartDashboard.putData("hopper", hopper);
-    SmartDashboard.putData("climber", climber);
-    SmartDashboard.putData("lights", lights);
-  }
+        auxController
+                .leftTrigger()
+                .and(auxController.b())
+                .whileTrue(superstructure.intakeAlgaeGround().withName("algae ground"));
 
-  public void updateMechanism2ds() {
-    Pose3d[] mechanismPoses = {
-      new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
-      // new Pose3d(0, 0, elevator.get1stStageHeight(), new Rotation3d(0, 0, 0)),
-      // new Pose3d(0, 0, elevator.get2ndStageHeight(), new Rotation3d(0, 0, 0)),
-      // new Pose3d(0, 0, elevator.getCarrageHeight(), new Rotation3d(0, 0, 0))
-    };
-    Logger.recordOutput("mechanismPoses", mechanismPoses);
-  }
+        auxController
+                .rightTrigger()
+                .and(auxController.b())
+                .whileTrue(superstructure.intakeAlgaeL2().withName("algae L2"));
 
-  public void configureNamedCommands() {
-    // NamedCommands.registerCommand("L4", mechanismControl.setState(State.levelFour).asProxy());
-    // NamedCommands.registerCommand("L3", mechanismControl.setState(State.levelThree).asProxy());
-    // NamedCommands.registerCommand(
-    //     "bargeScore",
-    //     Commands.runEnd(
-    //             () -> {
-    //               wrist.reqestIntakeVoltage(12);
-    //             },
-    //             () -> wrist.stopIntake())
-    //         .withTimeout(0.5)
-    //         .asProxy());
-    // NamedCommands.registerCommand(
-    //     "score",
-    //     Commands.runEnd(
-    //             () -> {
-    //               wrist.reqestIntakeVoltage(3);
-    //             },
-    //             () -> wrist.stopIntake())
-    //         .withTimeout(0.5)
-    //         .asProxy());
-    // NamedCommands.registerCommand(
-    //     "waitUntilInake", Commands.waitUntil(wrist.detectsForward).asProxy());
-    // NamedCommands.registerCommand(
-    //     "algaeL3", mechanismControl.setState(State.algeaPickupL3).asProxy());
-    // NamedCommands.registerCommand(
-    //     "algaeL2", mechanismControl.setState(State.algaePickupL2).asProxy());
-    // NamedCommands.registerCommand("store", mechanismControl.setState(State.store).asProxy());
-    // NamedCommands.registerCommand("intake",
-    // mechanismControl.setState(State.coralPickup).asProxy());
-    // NamedCommands.registerCommand(
-    //     "waitUntilSetpoint",
-    //     Commands.run(() -> {}).until(mechanismControl.atDualSetPoint).asProxy());
+        auxController
+                .leftBumper()
+                .and(auxController.b())
+                .whileTrue(superstructure.intakeAlgaeL3().withName("algae L3"));
 
-    // NamedCommands.registerCommand("waitAlgea",
-    // Commands.waitUntil(wrist.intakeStalled).asProxy());
-    // NamedCommands.registerCommand(
-    //     "algaeStore", mechanismControl.setState(State.algeaStore).asProxy());
-    // NamedCommands.registerCommand("barge", mechanismControl.setState(State.barge).asProxy());
-  }
-
-  private void configureTunerPaths() {
-    // Set up auto routines
-
-    if (Constants.usePIDtuning) {
-      // Set up SysId routines
-      autoChooser.addOption(
-          "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-      autoChooser.addOption(
-          "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-      autoChooser.addOption(
-          "Drive SysId (Quasistatic Forward)",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption(
-          "Drive SysId (Quasistatic Reverse)",
-          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooser.addOption(
-          "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption(
-          "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        auxController
+                .rightBumper()
+                .and(auxController.b())
+                .whileTrue(superstructure.scoreBarge(() -> true, controller.b()).withName("Score barge"));
     }
-  }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
+    private void configureLEDbindings() {}
+
+    public void logSubsystems() {
+        SmartDashboard.putData("drive", drive);
+        SmartDashboard.putData("superstructure", superstructure);
+        SmartDashboard.putData("outake", superstructure.outake);
+        SmartDashboard.putData("wrist", superstructure.wrist);
+        SmartDashboard.putData("elevator", superstructure.elevator);
+        SmartDashboard.putData("hopper", hopper);
+        SmartDashboard.putData("climber", climber);
+        SmartDashboard.putData("lights", lights);
+    }
+
+    public void updateMechanism2ds() {
+        Pose3d[] mechanismPoses = {
+            new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
+            // new Pose3d(0, 0, elevator.get1stStageHeight(), new Rotation3d(0, 0, 0)),
+            // new Pose3d(0, 0, elevator.get2ndStageHeight(), new Rotation3d(0, 0, 0)),
+            // new Pose3d(0, 0, elevator.getCarrageHeight(), new Rotation3d(0, 0, 0))
+        };
+        Logger.recordOutput("mechanismPoses", mechanismPoses);
+    }
+
+    public void configureNamedCommands() {
+        // NamedCommands.registerCommand("L4", mechanismControl.setState(State.levelFour).asProxy());
+        // NamedCommands.registerCommand("L3", mechanismControl.setState(State.levelThree).asProxy());
+        // NamedCommands.registerCommand(
+        //     "bargeScore",
+        //     Commands.runEnd(
+        //             () -> {
+        //               wrist.reqestIntakeVoltage(12);
+        //             },
+        //             () -> wrist.stopIntake())
+        //         .withTimeout(0.5)
+        //         .asProxy());
+        // NamedCommands.registerCommand(
+        //     "score",
+        //     Commands.runEnd(
+        //             () -> {
+        //               wrist.reqestIntakeVoltage(3);
+        //             },
+        //             () -> wrist.stopIntake())
+        //         .withTimeout(0.5)
+        //         .asProxy());
+        // NamedCommands.registerCommand(
+        //     "waitUntilInake", Commands.waitUntil(wrist.detectsForward).asProxy());
+        // NamedCommands.registerCommand(
+        //     "algaeL3", mechanismControl.setState(State.algeaPickupL3).asProxy());
+        // NamedCommands.registerCommand(
+        //     "algaeL2", mechanismControl.setState(State.algaePickupL2).asProxy());
+        // NamedCommands.registerCommand("store", mechanismControl.setState(State.store).asProxy());
+        // NamedCommands.registerCommand("intake",
+        // mechanismControl.setState(State.coralPickup).asProxy());
+        // NamedCommands.registerCommand(
+        //     "waitUntilSetpoint",
+        //     Commands.run(() -> {}).until(mechanismControl.atDualSetPoint).asProxy());
+
+        // NamedCommands.registerCommand("waitAlgea",
+        // Commands.waitUntil(wrist.intakeStalled).asProxy());
+        // NamedCommands.registerCommand(
+        //     "algaeStore", mechanismControl.setState(State.algeaStore).asProxy());
+        // NamedCommands.registerCommand("barge", mechanismControl.setState(State.barge).asProxy());
+    }
+
+    private void configureTunerPaths() {
+        // Set up auto routines
+
+        if (Constants.usePIDtuning) {
+            // Set up SysId routines
+            autoChooser.addOption(
+                    "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+            autoChooser.addOption("Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+            autoChooser.addOption(
+                    "Drive SysId (Quasistatic Forward)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+            autoChooser.addOption(
+                    "Drive SysId (Quasistatic Reverse)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+            autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+            autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        }
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.get();
+    }
 }

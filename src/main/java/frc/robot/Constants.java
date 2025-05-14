@@ -23,27 +23,27 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * (log replay from a file).
  */
 public final class Constants {
-  public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-  public static final boolean usePIDtuning = false;
+    public static final boolean usePIDtuning = false;
 
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
+    public static enum Mode {
+        /** Running on a real robot. */
+        REAL,
 
-    /** Running a physics simulator. */
-    SIM,
+        /** Running a physics simulator. */
+        SIM,
 
-    /** Replaying from a log file. */
-    REPLAY
-  }
+        /** Replaying from a log file. */
+        REPLAY
+    }
 
-  public static final class OIConstants {
-    public static final double kDriveDeadband = 0.10;
-    public static final Joystick kdriveJoyButton = new Joystick(0);
+    public static final class OIConstants {
+        public static final double kDriveDeadband = 0.10;
+        public static final Joystick kdriveJoyButton = new Joystick(0);
 
-    public static final CommandXboxController m_driverController = new CommandXboxController(0);
-    public static final Joystick kauxController = new Joystick(1);
-  }
+        public static final CommandXboxController m_driverController = new CommandXboxController(0);
+        public static final Joystick kauxController = new Joystick(1);
+    }
 }

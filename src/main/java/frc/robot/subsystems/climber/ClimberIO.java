@@ -4,19 +4,19 @@ import org.littletonrobotics.junction.AutoLog;
 
 // Values to control subsystem
 public interface ClimberIO {
-  @AutoLog
-  class ClimberIOInputs {
+    @AutoLog
+    class ClimberIOInputs {
 
-    public double climberPOS = 0.0;
-    public double climberCurrent = 0.0;
-    public double climberVoltage = 0.0;
-  }
+        public double climberPOS = 0.0;
+        public double climberCurrent = 0.0;
+        public double climberVoltage = 0.0;
+    }
 
-  default void voltageControl(double voltage) {}
+    default void voltageControl(double voltage) {}
 
-  default void updateInputs(ClimberIOInputs inputs) {}
+    default void updateInputs(ClimberIOInputs inputs) {}
 
-  default void setClimberPosition(double position) {}
+    default void setClimberPosition(double position) {}
 
-  default void stop() {}
+    default void stop() {}
 }

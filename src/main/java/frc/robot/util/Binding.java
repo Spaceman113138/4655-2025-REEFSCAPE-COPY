@@ -9,19 +9,19 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Add your docs here. */
 public class Binding {
-  public Trigger trigger;
-  public Command targetCommand;
-  public String name;
+    public Trigger trigger;
+    public Command targetCommand;
+    public String name;
 
-  public Binding(Trigger trigger, Command targetCommand) {
-    this.trigger = trigger;
-    this.targetCommand = targetCommand;
-    this.name = targetCommand.getName();
-  }
+    public Binding(Trigger trigger, Command targetCommand) {
+        this.trigger = trigger;
+        this.targetCommand = targetCommand;
+        this.name = targetCommand.getName();
+    }
 
-  public Binding(Trigger trigger, Command targetCommand, String name) {
-    this.trigger = trigger;
-    this.targetCommand = targetCommand;
-    this.name = name;
-  }
+    public Binding(Trigger trigger, Command targetCommand, String name) {
+        this.trigger = trigger;
+        this.targetCommand = targetCommand;
+        this.name = name;
+    }
 }

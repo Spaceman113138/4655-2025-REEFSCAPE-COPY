@@ -22,80 +22,79 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lights extends SubsystemBase {
-  private static final CANdle candle = new CANdle(MechanismConstants.CANdleID);
-  private static final CANdleConfiguration config = new CANdleConfiguration();
-  private static final int numLEDS = 33 + 8;
-  private static final Color zeroColor = new Color(0, 0, 0);
+    private static final CANdle candle = new CANdle(MechanismConstants.CANdleID);
+    private static final CANdleConfiguration config = new CANdleConfiguration();
+    private static final int numLEDS = 33 + 8;
+    private static final Color zeroColor = new Color(0, 0, 0);
 
-  private double time = 0.0;
+    private double time = 0.0;
 
-  /** Creates a new Lights. */
-  public Lights() {
-    config.CANdleFeatures.withEnable5VRail(Enable5VRailValue.Disabled)
-        .withStatusLedWhenActive(StatusLedWhenActiveValue.Enabled)
-        .withVBatOutputMode(VBatOutputModeValue.On);
-    config
-        .LED
-        .withBrightnessScalar(0.5)
-        .withLossOfSignalBehavior(LossOfSignalBehaviorValue.KeepRunning)
-        .withStripType(StripTypeValue.GRBW);
+    /** Creates a new Lights. */
+    public Lights() {
+        config.CANdleFeatures.withEnable5VRail(Enable5VRailValue.Disabled)
+                .withStatusLedWhenActive(StatusLedWhenActiveValue.Enabled)
+                .withVBatOutputMode(VBatOutputModeValue.On);
+        config.LED
+                .withBrightnessScalar(0.5)
+                .withLossOfSignalBehavior(LossOfSignalBehaviorValue.KeepRunning)
+                .withStripType(StripTypeValue.GRBW);
 
-    candle.getConfigurator().apply(config);
+        candle.getConfigurator().apply(config);
 
-    clearAllAnimations();
-  }
-
-  public void clearAllAnimations() {
-    int max = candle.getMaxSimultaneousAnimationCount().getValue();
-    for (int i = 0; i < max; i++) {
-      candle.setControl(new EmptyAnimation(i));
+        clearAllAnimations();
     }
-  }
 
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("LIGHTS/TIME", time);
-  }
+    public void clearAllAnimations() {
+        int max = candle.getMaxSimultaneousAnimationCount().getValue();
+        for (int i = 0; i < max; i++) {
+            candle.setControl(new EmptyAnimation(i));
+        }
+    }
 
-  private double minValue(Color color) {
-    return Math.min(color.blue, Math.min(color.red, color.blue));
-  }
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("LIGHTS/TIME", time);
+    }
 
-  private void setStrobe(int r, int g, int b) {
-    StrobeAnimation animation =
-        new StrobeAnimation(0, numLEDS)
-            .withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))))
-            .withFrameRate(2);
-    setLEDstrip(animation);
-  }
+    private double minValue(Color color) {
+        return Math.min(color.blue, Math.min(color.red, color.blue));
+    }
 
-  private void setStrobe(Color color) {
-    setLEDstrip(new StrobeAnimation(0, numLEDS).withColor(new RGBWColor(color)).withFrameRate(1));
-  }
+    private void setStrobe(int r, int g, int b) {
+        StrobeAnimation animation = new StrobeAnimation(0, numLEDS)
+                .withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))))
+                .withFrameRate(2);
+        setLEDstrip(animation);
+    }
 
-  private void setFade(Color color) {
-    setLEDstrip(
-        new SingleFadeAnimation(0, numLEDS).withColor(new RGBWColor(color)).withFrameRate(10));
-  }
+    private void setStrobe(Color color) {
+        setLEDstrip(
+                new StrobeAnimation(0, numLEDS).withColor(new RGBWColor(color)).withFrameRate(1));
+    }
 
-  private void setFade(int r, int g, int b) {
-    setLEDstrip(
-        new SingleFadeAnimation(0, numLEDS)
-            .withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))))
-            .withFrameRate(10));
-  }
+    private void setFade(Color color) {
+        setLEDstrip(new SingleFadeAnimation(0, numLEDS)
+                .withColor(new RGBWColor(color))
+                .withFrameRate(10));
+    }
 
-  public void setSolid(int r, int g, int b) {
-    SolidColor animation =
-        new SolidColor(0, numLEDS).withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))));
-    setLEDstrip(animation);
-  }
+    private void setFade(int r, int g, int b) {
+        setLEDstrip(new SingleFadeAnimation(0, numLEDS)
+                .withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))))
+                .withFrameRate(10));
+    }
 
-  public void setSolid(Color color) {
-    setLEDstrip(new SolidColor(0, numLEDS).withColor(new RGBWColor(color)));
-  }
+    public void setSolid(int r, int g, int b) {
+        SolidColor animation =
+                new SolidColor(0, numLEDS).withColor(new RGBWColor(r, g, b, Math.min(r, Math.min(g, b))));
+        setLEDstrip(animation);
+    }
 
-  public void setLEDstrip(ControlRequest animation) {
-    candle.setControl(animation);
-  }
+    public void setSolid(Color color) {
+        setLEDstrip(new SolidColor(0, numLEDS).withColor(new RGBWColor(color)));
+    }
+
+    public void setLEDstrip(ControlRequest animation) {
+        candle.setControl(animation);
+    }
 }

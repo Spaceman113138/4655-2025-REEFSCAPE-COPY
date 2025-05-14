@@ -13,19 +13,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class SubsystemGroup extends SubsystemBase {
 
-  /**
-   * Wraps a command such that from the outside, it looks like only the parent subsystem is
-   * requiring the command.
-   *
-   * <p><b>All PUBLICLY AVAILABLE COMMANDS MUST BE RUN THROUGH THIS METHOD OR * ELSE IT'S ENTIRELY
-   * UNDEFINED BEHAVIOR.
-   *
-   * @param internal The command to wrap
-   * @return The wrapped command.
-   */
-  protected Command expose(Command internal) {
-    var proxied = internal.asProxy();
-    proxied.addRequirements(this);
-    return proxied;
-  }
+    /**
+     * Wraps a command such that from the outside, it looks like only the parent subsystem is
+     * requiring the command.
+     *
+     * <p><b>All PUBLICLY AVAILABLE COMMANDS MUST BE RUN THROUGH THIS METHOD OR * ELSE IT'S ENTIRELY
+     * UNDEFINED BEHAVIOR.
+     *
+     * @param internal The command to wrap
+     * @return The wrapped command.
+     */
+    protected Command expose(Command internal) {
+        var proxied = internal.asProxy();
+        proxied.addRequirements(this);
+        return proxied;
+    }
 }

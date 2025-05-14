@@ -10,52 +10,52 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
-  private final ClimberIO io;
-  private ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
-  private double climberPOS;
+    private final ClimberIO io;
+    private ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+    private double climberPOS;
 
-  private static final double prepareClimbPosition = 0.0;
-  private static final double climbPosition = 4.6; // may be double this
+    private static final double prepareClimbPosition = 0.0;
+    private static final double climbPosition = 4.6; // may be double this
 
-  public Trigger climberStalled =
-      new Trigger(() -> Math.round(inputs.climberCurrent) >= ClimberConstants.climberCurrentLimit)
-          .debounce(.25, DebounceType.kFalling);
+    public Trigger climberStalled = new Trigger(
+                    () -> Math.round(inputs.climberCurrent) >= ClimberConstants.climberCurrentLimit)
+            .debounce(.25, DebounceType.kFalling);
 
-  public Climber(ClimberIO io) {
-    this.io = io;
-  }
+    public Climber(ClimberIO io) {
+        this.io = io;
+    }
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Climber", inputs);
-  }
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Climber", inputs);
+    }
 
-  public void requestClimberVoltage(Supplier<Double> voltage) {
-    io.voltageControl(voltage.get());
-  }
+    public void requestClimberVoltage(Supplier<Double> voltage) {
+        io.voltageControl(voltage.get());
+    }
 
-  public Command voltageCommand(Supplier<Double> voltage) {
-    return Commands.run(() -> requestClimberVoltage(voltage)).withName("Run Voltage: " + voltage);
-  }
+    public Command voltageCommand(Supplier<Double> voltage) {
+        return Commands.run(() -> requestClimberVoltage(voltage)).withName("Run Voltage: " + voltage);
+    }
 
-  public Command prepareClimbPosition() {
-    return run(() -> requestPosition(climbPosition)).withName("Climb Position");
-  }
+    public Command prepareClimbPosition() {
+        return run(() -> requestPosition(climbPosition)).withName("Climb Position");
+    }
 
-  private void requestPosition(double position) {
-    io.setClimberPosition(position);
-  }
+    private void requestPosition(double position) {
+        io.setClimberPosition(position);
+    }
 
-  public void setClimberPosition(double pos) {
-    io.setClimberPosition(pos);
-  }
+    public void setClimberPosition(double pos) {
+        io.setClimberPosition(pos);
+    }
 
-  public double getClimberPos() {
-    return inputs.climberPOS;
-  }
+    public double getClimberPos() {
+        return inputs.climberPOS;
+    }
 
-  public void stop() {
-    io.stop();
-  }
+    public void stop() {
+        io.stop();
+    }
 }

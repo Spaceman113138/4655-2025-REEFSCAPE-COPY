@@ -15,52 +15,50 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import frc.robot.subsystems.MechanismConstants;
 
 public class ClimberIOSparkMax implements ClimberIO {
-  private SparkFlex m_climber;
-  private SparkFlexConfig climberConfig = new SparkFlexConfig();
-  private RelativeEncoder climbEncoder;
-  private AbsoluteEncoder climberEncoder;
-  private SparkClosedLoopController climbController;
-  private ClosedLoopConfig climberClosedLoopConfig = climberConfig.closedLoop;
+    private SparkFlex m_climber;
+    private SparkFlexConfig climberConfig = new SparkFlexConfig();
+    private RelativeEncoder climbEncoder;
+    private AbsoluteEncoder climberEncoder;
+    private SparkClosedLoopController climbController;
+    private ClosedLoopConfig climberClosedLoopConfig = climberConfig.closedLoop;
 
-  // private ArmFeedforward armFeedforward =
-  //     new ArmFeedforward(ClimberConstants.ks, ClimberConstants.kg, 0);
+    // private ArmFeedforward armFeedforward =
+    //     new ArmFeedforward(ClimberConstants.ks, ClimberConstants.kg, 0);
 
-  public ClimberIOSparkMax() {
-    climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80).inverted(false);
+    public ClimberIOSparkMax() {
+        climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80).inverted(false);
 
-    climberConfig.closedLoop.pid(0.5, 0, 0);
+        climberConfig.closedLoop.pid(0.5, 0, 0);
 
-    m_climber = new SparkFlex(MechanismConstants.climberId, MotorType.kBrushless);
-    m_climber.configure(
-        climberConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_climber = new SparkFlex(MechanismConstants.climberId, MotorType.kBrushless);
+        m_climber.configure(climberConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-    climbEncoder = m_climber.getEncoder();
-    climberEncoder = m_climber.getAbsoluteEncoder();
+        climbEncoder = m_climber.getEncoder();
+        climberEncoder = m_climber.getAbsoluteEncoder();
 
-    climbController = m_climber.getClosedLoopController();
-    climbEncoder = m_climber.getEncoder();
+        climbController = m_climber.getClosedLoopController();
+        climbEncoder = m_climber.getEncoder();
 
-    climberClosedLoopConfig =
-        climberConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-    climberClosedLoopConfig.pid(0.002, 0, 0);
-  }
+        climberClosedLoopConfig = climberConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        climberClosedLoopConfig.pid(0.002, 0, 0);
+    }
 
-  @Override
-  public void updateInputs(ClimberIOInputs inputs) {
-    inputs.climberPOS = climbEncoder.getPosition();
-    inputs.climberCurrent = m_climber.getOutputCurrent();
-    inputs.climberVoltage = m_climber.getBusVoltage() * m_climber.getAppliedOutput();
-  }
+    @Override
+    public void updateInputs(ClimberIOInputs inputs) {
+        inputs.climberPOS = climbEncoder.getPosition();
+        inputs.climberCurrent = m_climber.getOutputCurrent();
+        inputs.climberVoltage = m_climber.getBusVoltage() * m_climber.getAppliedOutput();
+    }
 
-  public void setClimberPosition(double pos) {
-    climbController.setReference(pos, SparkBase.ControlType.kPosition);
-  }
+    public void setClimberPosition(double pos) {
+        climbController.setReference(pos, SparkBase.ControlType.kPosition);
+    }
 
-  public void stop() {
-    m_climber.stopMotor();
-  }
+    public void stop() {
+        m_climber.stopMotor();
+    }
 
-  public void voltageControl(double voltage) {
-    m_climber.setVoltage(voltage);
-  }
+    public void voltageControl(double voltage) {
+        m_climber.setVoltage(voltage);
+    }
 }
